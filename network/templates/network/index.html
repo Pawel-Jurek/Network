@@ -1,5 +1,31 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+    <div id="new_post_view">
+        <h1>All posts</h1>
+        <div class="post">
+            <form id="post_form">
+                <h2>New Post</h2>
+                <textarea id="post_content"></textarea>
+                <input id="submit_button" value="Post" type="submit" class="btn btn-primary"/>
+            </form>
+        </div>
+    </div>
+
+    <div id="following_view">
+        Following
+    </div>
+
+    <div id="user_page_view">
+        User page
+    </div>
+
+    <div id="posts_view">
+        Posts view
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/pages.js' %}"></script>
 {% endblock %}

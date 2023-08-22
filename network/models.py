@@ -20,7 +20,17 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
     like_count = models.IntegerField(default=0)
     def __str__(self):
-        return f'{self.author}: {self.content[:10]}'
+        return f'{self.author.username}: {self.content[:10]}'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+            "created_date": self.created_date.strftime("%b %d %Y, %I:%M %p"),
+            "author": self.author.username,
+            "likes": [user.username for user in self.likes.all()],
+            "like_count": self.like_count
+        }
 
 
 class Comment(models.Model):
