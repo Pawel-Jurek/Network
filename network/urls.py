@@ -11,5 +11,6 @@ urlpatterns = [
     path("new_post", views.new_post, name="new_post"),
     #path("posts/<str:category>", views.posts, name="posts") //future version
     path("posts", views.posts, name="posts"),
-    path("like_post/<int:post_id>", views.like_post, name="like_post")
+    path("like_post/<int:post_id>", views.like_post, name="like_post"),
+    path("get_user", views.get_user, name="get_user")
 ]

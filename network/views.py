@@ -107,7 +107,6 @@ def posts(request):
 @csrf_exempt
 @login_required
 def like_post(request, post_id):
-    print(f'\nJestesmy w funkcji likowania:)')
     try:
         post = Post.objects.get(pk = post_id)
     except Post.DoesNotExist:
@@ -136,3 +135,10 @@ def like_post(request, post_id):
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
+
+@csrf_exempt
+@login_required   
+def get_user(request):
+    return JsonResponse({
+        "user": request.user.username
+    })
