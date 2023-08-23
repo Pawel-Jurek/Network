@@ -18,7 +18,7 @@ class Post(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_author')
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
-    like_count = models.IntegerField(default=0)
+    
     def __str__(self):
         return f'{self.author.username}: {self.content[:10]}'
     
@@ -29,8 +29,11 @@ class Post(models.Model):
             "created_date": self.created_date.strftime("%b %d %Y, %I:%M %p"),
             "author": self.author.username,
             "likes": [user.username for user in self.likes.all()],
-            "like_count": self.like_count
+            "likes_count": self.count_likes()
         }
+    
+    def count_likes(self):
+        return self.likes.count()
 
 
 class Comment(models.Model):

@@ -10,5 +10,6 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("new_post", views.new_post, name="new_post"),
     #path("posts/<str:category>", views.posts, name="posts") //future version
-    path("posts", views.posts, name="posts")
+    path("posts", views.posts, name="posts"),
+    path("like_post/<int:post_id>", views.like_post, name="like_post")
 ]

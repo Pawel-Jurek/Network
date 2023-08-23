@@ -102,3 +102,37 @@ def posts(request):
     posts_list = posts_list.order_by("-created_date").all()
 
     return JsonResponse([post.serialize() for post in posts_list], safe=False)
+
+
+@csrf_exempt
+@login_required
+def like_post(request, post_id):
+    print(f'\nJestesmy w funkcji likowania:)')
+    try:
+        post = Post.objects.get(pk = post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return email contents
+    if request.method == "GET":
+        return JsonResponse(post.serialize())
+
+    # Update whether email is read or should be archived
+    elif request.method == "PUT":
+        try:
+            post = Post.objects.get(pk=post_id)
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post does not exist"}, status=404)
+  
+        if request.user not in post.likes.all():
+            post.likes.add(request.user)
+        else:
+            post.likes.remove(request.user)
+        post.save()
+        return HttpResponse(status=204)
+
+    # Post must be via GET or PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
