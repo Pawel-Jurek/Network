@@ -3,7 +3,6 @@
 
 {% block body %}
     <div id="new_post_view">
-        <h1>All posts</h1>
         <div class="post">
             <form id="post_form">
                 <h2>New Post</h2>
@@ -18,7 +17,20 @@
     </div>
 
     <div id="user_page_view">
-        User page
+        <div class="container" style="margin: 0;">
+            <div class="row">
+                <div class="col-2" style="text-align: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                    </svg>
+                </div>
+                <div class="col-4" id="username-col"></div>
+                <div class="col-2" id="followers-col">Followers</div>
+                <div class="col-2" id="following-col">Following</div>
+                <div class="col-2" id="posts-col">Posts</div>
+            </div>
+        </div>
     </div>
 
     <div id="posts_view">

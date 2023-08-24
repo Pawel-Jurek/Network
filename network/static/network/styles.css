@@ -1,5 +1,6 @@
 body {
     padding: 10px;
+    height: 100vh;
   }
 
   .post {
@@ -17,6 +18,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    height: calc(80vh - 110px);
   }
 
   #submit_button {
@@ -48,26 +50,41 @@ body {
     border: 2px solid red;
     border-radius: 50%;
     position: relative;
-    margin-right: 5px; /* Odstęp od numeru polubień */
+    margin-right: 5px; 
   }
   
-  /* Styl dla liczby polubień */
   .heart-count {
     font-weight: bold;
   }
   
-  /* Styl dla sekcji komentarzy */
   .comments-section {
-    margin-top: 10px; /* Odstęp od numeru polubień */
+    margin-top: 10px; 
   }
   
-  /* Styl dla polubienia przez użytkownika */
   .heart-icon.user-liked {
     background-color: white;
     color: red;
   }
   
-  /* Styl dla liczby polubień przy polubieniu przez użytkownika */
   .heart-count.user-liked {
     color: red;
+  }
+  
+  .container{
+    margin: 0;
+  }
+
+  .author-clickable {
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .author-clickable:hover {
+    text-decoration: underline;
+  }
+
+  #user_page_view{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgb(251, 252, 242);
   }
