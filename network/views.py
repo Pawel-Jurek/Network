@@ -149,14 +149,38 @@ def user_info(request, username):
     # Return emails in reverse chronologial order
     followers = post_author.followers_count()
     following = post_author.following_count()
-    print(f'\nuser:{post_author.username}, following:{following}, followers: {followers}, posts: {posts_list.count()}')
+    #print(f'\nuser:{post_author.username}, following:{following}, followers: {followers}, posts: {posts_list.count()}')
     
     jsonData = {
         "followingCount": following,
         "followersCount": followers,
-        "postsCount": posts_list.count()
+        "postsCount": posts_list.count(),
+        "is_follower": request.user in post_author.followers.all()
     }
     for post in posts_list:
         jsonData.update(post.serialize())
 
     return JsonResponse(jsonData, safe=False)
+
+
+@csrf_exempt
+@login_required 
+def follow(request, username):
+    if request.method == "PUT":
+        try:
+            user_to_follow = User.objects.get(username = username)
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "User does not exist"}, status=404)
+  
+        
+        if request.user not in user_to_follow.followers.all():
+           user_to_follow.followers.add(request.user)
+        else:
+            user_to_follow.followers.remove(request.user)
+        user_to_follow.save()
+        return HttpResponse(status=204)
+
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)

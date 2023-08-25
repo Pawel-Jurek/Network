@@ -76,12 +76,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if(user_is_logged_in && author !== document.querySelector('#user_page').textContent){
         const followButton = document.createElement('button');
-        followButton.innerHTML = "Follow";
-        followButton.style.marginTop = "10px";
-        followButton.style.width = '80%';
-        followButton.addEventListener('click', () => alert("button clicked"))
-        userCenterBox.appendChild(followButton);
+        if(data.is_follower){
+          followButton.className = "btn btn-primary";
+          followButton.innerHTML = "Unfollow :(";
+        } else {
+          followButton.className = "btn btn-outline-primary";
+          followButton.innerHTML = "Follow :)";
+        }
+
+        followButton.addEventListener('click', function() {         
+          fetch(`/follow/${author}`, {
+            method: 'PUT'
+          })
+          .then(updatedUser => {
+            data.is_follower = updatedUser.is_follower
+            load_user_page(author);
+          })
+          .catch(error => {
+            console.error('Error', error);
+          });
+        });
         
+        followButton.style.marginTop = "10px";
+        followButton.style.width = '120px';
+
+        userCenterBox.appendChild(followButton);
+
       } else if(user_is_logged_in) {
         const userDescription = document.createElement('h3');
         userDescription.innerHTML = "<em>Welcome on your Page:)</em>";
@@ -114,9 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const number_fill_d = 2;
       const post_icon_class = "bi bi-pencil-square";
       const post_icon_fill_rule = "evenodd";
-      const posts_color = "#f2d513";
+      const posts_color = "#1b8729";
       const posts_content = data.postsCount;
-      const posts_description = "Posts";
+      const posts_description = "Written posts";
       create_icon_and_description(postsDiv, post_icon_d, post_icon_class, posts_color, posts_content, posts_description, post_icon_fill_rule, post_icon2_d, number_fill_d);     
     
 
