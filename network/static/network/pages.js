@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
       //-------------- posts displaying section
-      load_posts('created_by', '#userPosts', `${author}'s posts`, author);
+      load_posts('created_by', '#userPosts', `${author}'s posts`,load_user_page, author, author);
 
 
       })
@@ -218,10 +218,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#posts_view').style.display = 'block';
 
-    load_posts('all', '#posts_view', 'Posts');
+    load_posts('all', '#posts_view', 'Posts', load_all_posts, '');
   }
 
-  function load_posts(category, placementDiv, titleText, post_author = ''){
+  function load_posts(category, placementDiv, titleText, callerFunction, callerParams, post_author = ''){
     const main_container = document.querySelector(placementDiv);
     var user_is_logged_in = document.querySelector('#logout_button') !== null;
     main_container.innerHTML = '';
@@ -309,7 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(updatedPost => {
               post.likes_count = updatedPost.likes_count;
               post.user_liked = updatedPost.user_liked;
-              load_all_posts();
+              //load_all_posts();
+              callerFunction(callerParams);
             })
             .catch(error => {
               console.error('Error', error);
