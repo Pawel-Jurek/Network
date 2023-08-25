@@ -97,7 +97,6 @@ def posts(request):
     '''
 
     posts_list = Post.objects.all()
-    print(f'\nilosc postow: {posts_list.count()}')
     # Return emails in reverse chronologial order
     posts_list = posts_list.order_by("-created_date").all()
 
@@ -142,3 +141,22 @@ def get_user(request):
     return JsonResponse({
         "user": request.user.username
     })
+
+
+def user_info(request, username):
+    post_author = User.objects.get(username = username)
+    posts_list = Post.objects.filter(author = post_author).order_by("-created_date").all()
+    # Return emails in reverse chronologial order
+    followers = post_author.followers_count()
+    following = post_author.following_count()
+    print(f'\nuser:{post_author.username}, following:{following}, followers: {followers}, posts: {posts_list.count()}')
+    
+    jsonData = {
+        "followingCount": following,
+        "followersCount": followers,
+        "postsCount": posts_list.count()
+    }
+    for post in posts_list:
+        jsonData.update(post.serialize())
+
+    return JsonResponse(jsonData, safe=False)

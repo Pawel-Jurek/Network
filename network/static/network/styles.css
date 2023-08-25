@@ -3,88 +3,102 @@ body {
     height: 100vh;
   }
 
-  .post {
-    border: 2px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
+.post {
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
-  #post_content {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    height: calc(80vh - 110px);
-  }
+#post_content {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  height: calc(80vh - 110px);
+}
 
-  #submit_button {
-    margin-top: 10px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
+#submit_button {
+  margin-top: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-  #submit_button:hover {
-    background-color: #2980b9;
-  }
+#submit_button:hover {
+  background-color: #2980b9;
+}
 
-  #displayed_post{
-    text-align: left;
-  }
+#displayed_post{
+  text-align: left;
+}
 
 
 /* Styl dla ikony serca */
 .heart-icon {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-color: red;
-    border: 2px solid red;
-    border-radius: 50%;
-    position: relative;
-    margin-right: 5px; 
-  }
-  
-  .heart-count {
-    font-weight: bold;
-  }
-  
-  .comments-section {
-    margin-top: 10px; 
-  }
-  
-  .heart-icon.user-liked {
-    background-color: white;
-    color: red;
-  }
-  
-  .heart-count.user-liked {
-    color: red;
-  }
-  
-  .container{
-    margin: 0;
-  }
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border: 2px solid red;
+  border-radius: 50%;
+  position: relative;
+  margin-right: 5px; 
+}
 
-  .author-clickable {
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .author-clickable:hover {
-    text-decoration: underline;
-  }
+.count {
+  font-weight: bold;
+}
 
-  #user_page_view{
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-color: rgb(251, 252, 242);
-  }
+.comments-section {
+  margin-top: 10px; 
+}
+
+.heart-icon.user-liked {
+  background-color: white;
+  color: red;
+}
+
+.count.user-liked {
+  color: red;
+}
+
+.container{
+  margin: 0;
+}
+
+.author-clickable {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.author-clickable:hover {
+  text-decoration: underline;
+}
+
+#user_page_view{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(251, 252, 242);
+}
+
+#followers-col, #following-col, #posts-col{
+  display: grid;
+  place-items: center;
+}
+
+.centerBox{
+  text-align: center;
+}
+
+#username-col{
+  display: grid;
+  place-items: center;
+}

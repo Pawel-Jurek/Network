@@ -12,5 +12,6 @@ urlpatterns = [
     #path("posts/<str:category>", views.posts, name="posts") //future version
     path("posts", views.posts, name="posts"),
     path("like_post/<int:post_id>", views.like_post, name="like_post"),
-    path("get_user", views.get_user, name="get_user")
+    path("get_user", views.get_user, name="get_user"),
+    path("user_info/<str:username>", views.user_info, name="user_info")
 ]

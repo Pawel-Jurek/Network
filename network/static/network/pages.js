@@ -49,29 +49,139 @@ document.addEventListener('DOMContentLoaded', function() {
     
   }
 
-  function load_user_page(user) {
+  function load_user_page(author) {
     // Show the mailbox and hide other views 
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'none';
     document.querySelector('#user_page_view').style.display = 'block';
     document.querySelector('#posts_view').style.display = 'none';
 
-    const username_col = document.querySelector('#username-col');
-    username_col.innerHTML = '';
+    var user_is_logged_in = document.querySelector('#logout_button') !== null;
+
+    fetch(`/user_info/${author}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+
+      //-------------- user icon and button section
+      const username_col = document.querySelector('#username-col');
+      username_col.innerHTML = '';
+
+      const userCenterBox = document.createElement('div');
+      const usernameHeader = document.createElement('h2');
+      usernameHeader.innerHTML = author;
+      usernameHeader.style.fontWeight = "bold";
+      usernameHeader.style.fontSize = "1.5rem";
+      userCenterBox.appendChild(usernameHeader);
+
+      if(user_is_logged_in && author !== document.querySelector('#user_page').textContent){
+        const followButton = document.createElement('button');
+        followButton.innerHTML = "Follow";
+        followButton.style.marginTop = "10px";
+        followButton.style.width = '80%';
+        followButton.addEventListener('click', () => alert("button clicked"))
+        userCenterBox.appendChild(followButton);
+        
+      } else if(user_is_logged_in) {
+        const userDescription = document.createElement('h3');
+        userDescription.innerHTML = "<em>Welcome on your Page:)</em>";
+        userDescription.style.fontSize = "1.2rem";
+        userCenterBox.appendChild(userDescription);
+      }
+      username_col.appendChild(userCenterBox);
+      
+      
+      //-------------- followers section
+      const followersDiv = 'followers-col'
+      const people_icon_d = "M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z";
+      const people_icon_class = "bi bi-people-fill";
+      const followers_color = "#b82d14";
+      const followers_content = data.followersCount; 
+      const followers_description = "Followers";
+      create_icon_and_description(followersDiv, people_icon_d, people_icon_class, followers_color, followers_content, followers_description);
+      
+      //-------------- following section
+      const followingDiv = 'following-col'
+      const following_color = "#033387";
+      const following_content = data.followingCount; 
+      const following_description = "Following";
+      create_icon_and_description(followingDiv, people_icon_d, people_icon_class, following_color, following_content, following_description);
+
+      //-------------- posts info section
+      const postsDiv = 'posts-col'
+      const post_icon_d = "M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z";
+      const post_icon2_d ='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z';
+      const number_fill_d = 2;
+      const post_icon_class = "bi bi-pencil-square";
+      const post_icon_fill_rule = "evenodd";
+      const posts_color = "#f2d513";
+      const posts_content = data.postsCount;
+      const posts_description = "Posts";
+      create_icon_and_description(postsDiv, post_icon_d, post_icon_class, posts_color, posts_content, posts_description, post_icon_fill_rule, post_icon2_d, number_fill_d);     
     
-    const usernameHeader = document.createElement('h2');
-    usernameHeader.innerHTML = user;
-    usernameHeader.style.fontWeight = "bold";
-    usernameHeader.style.fontSize = "1.5rem";
 
-    const followButton = document.createElement('button');
-    followButton.innerHTML = "Follow";
-    followButton.style.marginTop = "10px";
-    followButton.style.width = '80%';
+      //-------------- posts displaying section
+      //TODO
 
-    username_col.appendChild(usernameHeader);
-    username_col.appendChild(followButton);
 
+      })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  
+  }
+
+  function create_icon_and_description(default_div, svg_d, svg_class, svg_color, content, description, fill_rule = null, svg2_d = null, num = 0){
+    const main_container = document.querySelector(`#${default_div}`);
+    main_container.innerHTML='';
+
+    const center_box = document.createElement('div');
+    center_box.className = 'centerBox';
+    
+    const followingSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    followingSvg.setAttribute("width", "40");
+    followingSvg.setAttribute("height", "40");
+    followingSvg.setAttribute("fill", svg_color);       
+    followingSvg.setAttribute("viewBox", "0 0 16 16");
+    followingSvg.setAttribute("class", svg_class);
+    
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", svg_d);
+
+    if(svg2_d){
+      const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      if(fill_rule && num === 1){
+        path.setAttribute("fill-rule", fill_rule);
+      }else{
+        path2.setAttribute("d", svg2_d);
+        path2.setAttribute("fill-rule", fill_rule);
+        followingSvg.appendChild(path2);
+      }
+    } else if(fill_rule){
+      path.setAttribute("fill-rule", fill_rule);
+    }
+    
+
+    const followingCount = document.createElement('span');
+    followingCount.className = 'count';
+    followingCount.textContent = content;
+    followingCount.style.fontSize = '18px';
+    followingCount.style.paddingLeft = '5px';
+
+    const followingDescription = document.createElement('span');
+    followingDescription.className = 'count';
+    followingDescription.textContent = description;
+    followingDescription.style.fontSize = '18px';
+    followingDescription.style.paddingLeft = '5px';
+
+    var brElement = document.createElement('br');
+    
+    followingSvg.appendChild(path);
+    center_box.appendChild(followingSvg);
+    center_box.appendChild(followingCount);
+    center_box.appendChild(brElement);
+    center_box.appendChild(followingDescription);
+    main_container.appendChild(center_box);
   }
 
   function load_following() {
@@ -82,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#posts_view').style.display = 'none';
 
   }
+
+
 
   function load_all_posts(){
     document.querySelector('#user_page_view').style.display = 'none';
@@ -141,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }   
           })
           .catch(error => {
-            console.error('Błąd:', error);
+            console.error('Error', error);
           });      
         }
         else{
@@ -154,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         heartButton.appendChild(heartSvg);
         
         const heartCount = document.createElement('span');
-        heartCount.className = 'heart-count';
+        heartCount.className = 'count';
         heartCount.textContent = post.likes_count;
         heartCount.style.fontSize = '18px';
         heartCount.style.paddingLeft = '5px';
@@ -171,10 +283,8 @@ document.addEventListener('DOMContentLoaded', function() {
               method: 'PUT'
             })
             .then(updatedPost => {
-              // Aktualizacja danych o polubieniach
               post.likes_count = updatedPost.likes_count;
               post.user_liked = updatedPost.user_liked;
-              // Odświeżenie widoku postów
               load_all_posts();
             })
             .catch(error => {
@@ -182,8 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
           });
         }
-
-        
 
         element.appendChild(heartButton);
       
