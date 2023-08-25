@@ -71,7 +71,11 @@ body {
 }
 
 .container{
-  margin: 0;
+  margin: 0; 
+}
+
+#user_info_bar{
+  background-color: rgb(251, 252, 242);
 }
 
 .author-clickable {
@@ -85,8 +89,7 @@ body {
 
 #user_page_view{
   padding-top: 10px;
-  padding-bottom: 10px;
-  background-color: rgb(251, 252, 242);
+  padding-bottom: 10px; 
 }
 
 #followers-col, #following-col, #posts-col{
@@ -101,4 +104,9 @@ body {
 #username-col{
   display: grid;
   place-items: center;
+}
+
+#userPosts{
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

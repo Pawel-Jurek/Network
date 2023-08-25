@@ -13,12 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelector('#following').addEventListener('click', () => load_following());
     }
   
-    // By default, load the inbox
     load_all_posts()
   });
 
   function create_new_post() {
-    // Show the mailbox and hide other views
     document.querySelector('#user_page_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'none';
     document.querySelector('#new_post_view').style.display = 'block';
@@ -50,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function load_user_page(author) {
-    // Show the mailbox and hide other views 
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'none';
     document.querySelector('#user_page_view').style.display = 'block';
@@ -141,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
       //-------------- posts displaying section
-      //TODO
+      load_posts('created_by', '#userPosts', `${author}'s posts`, author);
 
 
       })
@@ -204,15 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
     main_container.appendChild(center_box);
   }
 
+
   function load_following() {
-    // Show the mailbox and hide other views
     document.querySelector('#user_page_view').style.display = 'none';
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'block';
     document.querySelector('#posts_view').style.display = 'none';
 
+    load_posts('followings', '#following_view', "Posts by people you follow");
   }
-
 
 
   function load_all_posts(){
@@ -221,14 +218,21 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#posts_view').style.display = 'block';
 
-    const main_container = document.querySelector('#posts_view');
+    load_posts('all', '#posts_view', 'Posts');
+  }
+
+  function load_posts(category, placementDiv, titleText, post_author = ''){
+    const main_container = document.querySelector(placementDiv);
     var user_is_logged_in = document.querySelector('#logout_button') !== null;
     main_container.innerHTML = '';
     const title = document.createElement('h1');
-    title.textContent = `Posts`;
+    title.textContent = titleText;
     main_container.appendChild(title);
-
-    fetch('/posts')
+    if(post_author){
+      post_author=`/${post_author}`;
+    }
+      
+    fetch(`/posts/${category}${post_author}`)
     .then(response => response.json())
     .then(posts => {
       console.log(posts);
@@ -325,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
+
   
 
   function get_user() {

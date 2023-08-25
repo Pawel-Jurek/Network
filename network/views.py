@@ -81,23 +81,19 @@ def new_post(request):
         return JsonResponse({"message": "Post created successfully."}, status=201)
 
 
-def posts(request):
-    '''
+def posts(request, category, username = None):
     if category == "all":
         posts_list = Post.objects.all()
-    elif category == "liked":
-        current_user = request.user       
-        posts_list = Post.objects.filter(likes=current_user)
-    elif category == "created":
-        posts_list = Post.objects.filter(
-            author=request.user
-        )
+    elif category == "followings" and request.user.is_authenticated:
+        user = User.objects.get(username = request.user.username)
+        followings = user.following.all()
+        posts_list = Post.objects.filter(author__in=followings)
+    elif category == "created_by" and request.user.is_authenticated:       
+        author = User.objects.get(username=username)
+        posts_list = Post.objects.filter(author=author)
     else:
         return JsonResponse({"error": "Invalid mailbox."}, status=400)
-    '''
 
-    posts_list = Post.objects.all()
-    # Return emails in reverse chronologial order
     posts_list = posts_list.order_by("-created_date").all()
 
     return JsonResponse([post.serialize() for post in posts_list], safe=False)
@@ -110,13 +106,7 @@ def like_post(request, post_id):
         post = Post.objects.get(pk = post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
-
-    # Return email contents
-    if request.method == "GET":
-        return JsonResponse(post.serialize())
-
-    # Update whether email is read or should be archived
-    elif request.method == "PUT":
+    if request.method == "PUT":
         try:
             post = Post.objects.get(pk=post_id)
         except Post.DoesNotExist:
@@ -129,7 +119,6 @@ def like_post(request, post_id):
         post.save()
         return HttpResponse(status=204)
 
-    # Post must be via GET or PUT
     else:
         return JsonResponse({
             "error": "GET or PUT request required."
@@ -146,10 +135,9 @@ def get_user(request):
 def user_info(request, username):
     post_author = User.objects.get(username = username)
     posts_list = Post.objects.filter(author = post_author).order_by("-created_date").all()
-    # Return emails in reverse chronologial order
+    
     followers = post_author.followers_count()
     following = post_author.following_count()
-    #print(f'\nuser:{post_author.username}, following:{following}, followers: {followers}, posts: {posts_list.count()}')
     
     jsonData = {
         "followingCount": following,
@@ -172,7 +160,6 @@ def follow(request, username):
         except Post.DoesNotExist:
             return JsonResponse({"error": "User does not exist"}, status=404)
   
-        
         if request.user not in user_to_follow.followers.all():
            user_to_follow.followers.add(request.user)
         else:
