@@ -114,3 +114,13 @@ body {
 .offcanvas-backdrop {
   transition: opacity 0.01s ease-in-out;
 }
+
+#highCenterRow{
+  display: flex;
+  align-items: flex-start;
+}
+
+#highCenterCol{
+  flex: 1;
+  text-align: left;
+}

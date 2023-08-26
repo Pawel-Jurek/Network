@@ -136,14 +136,18 @@ def user_info(request, username):
     post_author = User.objects.get(username = username)
     posts_list = Post.objects.filter(author = post_author).order_by("-created_date").all()
     
-    followers = post_author.followers_count()
-    following = post_author.following_count()
+    followersCount = post_author.followers_count()
+    followingCount = post_author.following_count()
     
+    print(f'\n\n{[user.username for user in post_author.following.all()]}\n\n')
+
     jsonData = {
-        "followingCount": following,
-        "followersCount": followers,
+        "followingCount": followingCount,
+        "followersCount": followersCount,
         "postsCount": posts_list.count(),
-        "is_follower": request.user in post_author.followers.all()
+        "is_follower": request.user in post_author.followers.all(),
+        "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in post_author.followers.all()],
+        "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in post_author.following.all()]
     }
     for post in posts_list:
         jsonData.update(post.serialize())

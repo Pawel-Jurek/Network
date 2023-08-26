@@ -47,6 +47,47 @@ document.addEventListener('DOMContentLoaded', function() {
     
   }
 
+
+  function follow(user_is_logged_in, author, mainDiv, is_follower, userCenterBox = null){
+    mainContainer = document.querySelector(mainDiv);
+    if(user_is_logged_in && author !== document.querySelector('#user_page').textContent){
+      const followButton = document.createElement('button');
+      if(is_follower){
+        followButton.className = "btn btn-primary";
+        followButton.innerHTML = "Unfollow :(";
+      } else {
+        followButton.className = "btn btn-outline-primary";
+        followButton.innerHTML = "Follow :)";
+      }
+
+      followButton.addEventListener('click', function() {         
+        fetch(`/follow/${author}`, {
+          method: 'PUT'
+        })
+        .then(updatedUser => {
+          is_follower = updatedUser.is_follower
+          load_user_page(author);
+        })
+        .catch(error => {
+          console.error('Error', error);
+        });
+      });
+      
+      followButton.style.marginTop = "10px";
+      followButton.style.width = '120px';
+
+      userCenterBox.appendChild(followButton);
+
+    } else if(user_is_logged_in) {
+      const userDescription = document.createElement('h3');
+      userDescription.innerHTML = "<em>Welcome on your Page:)</em>";
+      userDescription.style.fontSize = "1.2rem";
+      userCenterBox.appendChild(userDescription);
+    }
+    mainContainer.appendChild(userCenterBox);
+  }
+
+
   function load_user_page(author) {
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'none';
@@ -58,8 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(`/user_info/${author}`)
     .then(response => response.json())
     .then(data => {
-      console.log(data)
-
+      console.log('data', data);
       //-------------- user icon and button section
       const username_col = document.querySelector('#username-col');
       username_col.innerHTML = '';
@@ -67,10 +107,14 @@ document.addEventListener('DOMContentLoaded', function() {
       const userCenterBox = document.createElement('div');
       const usernameHeader = document.createElement('h2');
       usernameHeader.innerHTML = author;
+      usernameHeader.className = 'userHeading';
       usernameHeader.style.fontWeight = "bold";
       usernameHeader.style.fontSize = "1.5rem";
       userCenterBox.appendChild(usernameHeader);
 
+
+      follow(user_is_logged_in, author, '#username-col',data.is_follower, userCenterBox);
+      /*
       if(user_is_logged_in && author !== document.querySelector('#user_page').textContent){
         const followButton = document.createElement('button');
         if(data.is_follower){
@@ -106,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         userCenterBox.appendChild(userDescription);
       }
       username_col.appendChild(userCenterBox);
-      
+      */
       
       //-------------- followers section
       const followersDiv = 'followers-col'
@@ -115,14 +159,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const followers_color = "#b82d14";
       const followers_content = data.followersCount; 
       const followers_description = "Followers";
-      create_icon_and_description(followersDiv, people_icon_d, people_icon_class, followers_color, followers_content, followers_description);
+      const allFollowers = data.allFollowers;
+      console.log(`Followers: ${allFollowers}`);
+      create_icon_and_description(followersDiv, people_icon_d, people_icon_class, followers_color, followers_content, followers_description, allFollowers);
       
       //-------------- following section
       const followingDiv = 'following-col'
       const following_color = "#033387";
       const following_content = data.followingCount; 
       const following_description = "Following";
-      create_icon_and_description(followingDiv, people_icon_d, people_icon_class, following_color, following_content, following_description);
+      const allFollowing = data.allFollowing;
+      console.log(`Following: ${allFollowing}`);
+      create_icon_and_description(followingDiv, people_icon_d, people_icon_class, following_color, following_content, following_description, allFollowing);
 
       //-------------- posts info section
       const postsDiv = 'posts-col'
@@ -134,7 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const posts_color = "#1b8729";
       const posts_content = data.postsCount;
       const posts_description = "Written posts";
-      create_icon_and_description(postsDiv, post_icon_d, post_icon_class, posts_color, posts_content, posts_description, post_icon_fill_rule, post_icon2_d, number_fill_d);     
+      const users = null
+      create_icon_and_description(postsDiv, post_icon_d, post_icon_class, posts_color, posts_content, posts_description, users, post_icon_fill_rule, post_icon2_d, number_fill_d);     
     
 
       //-------------- posts displaying section
@@ -148,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   }
 
-  function create_icon_and_description(default_div, svg_d, svg_class, svg_color, content, description, fill_rule = null, svg2_d = null, num = 0){
+  function create_icon_and_description(default_div, svg_d, svg_class, svg_color, content, description, users, fill_rule = null, svg2_d = null, num = 0, refresh = false){
     const main_container = document.querySelector(`#${default_div}`);
     main_container.innerHTML='';
     if (default_div.includes('follow')){
@@ -168,6 +217,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
       main_container.addEventListener('click', function(){
         var offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvas"));
+        offcanvas_body = document.querySelector('.offcanvas-body')
+        
+        if(default_div.includes('following'))
+        {
+          document.querySelector('#offcanvasLabel').innerHTML = "Following:";
+        } else {
+          document.querySelector('#offcanvasLabel').innerHTML = "Followers:";
+        }
+        
+        offcanvas_body.innerHTML = '';
+        users.forEach(user => {
+          var rowDiv = document.createElement("div");
+          rowDiv.classList.add("row");
+          rowDiv.classList.add('highCenterRow');
+
+          var col1Div = document.createElement("div");
+          col1Div.classList.add("col-6");
+          col1Div.classList.add('highCenterCol');
+          col1Div.textContent = user.username;
+          col1Div.style.fontSize = '20px';
+
+          var col2Div = document.createElement("div");
+          col2Div.classList.add('highCenterCol');
+          col2Div.classList.add("col-6");
+
+          var user_is_logged_in = document.querySelector('#logout_button') !== null;
+
+          //follow(user_is_logged_in, searched_user, '#followButtonOffCanvas', user.is_followed); //opcja docelowa
+          // wersja prowizoryczna
+
+          if(user_is_logged_in && user.username !== document.querySelector('#user_page').textContent){
+            const followButton = document.createElement('button');
+            if(user.is_followed){
+              followButton.className = "btn btn-primary";
+              followButton.innerHTML = "Unfollow :(";
+            } else {
+              followButton.className = "btn btn-outline-primary";
+              followButton.innerHTML = "Follow :)";
+            }
+    
+            followButton.addEventListener('click', function() {         
+              fetch(`/follow/${user.username}`, {
+                method: 'PUT'
+              })
+              .then(updatedUser => {
+                user.is_followed = updatedUser.is_follower
+                offcanvas.hide();
+                load_user_page(user.username);
+
+              })
+              .catch(error => {
+                console.error('Error', error);
+              });
+            });
+            
+            followButton.style.width = '120px';
+            col2Div.appendChild(followButton);
+    
+          } else if(user_is_logged_in) {
+            const userDescription = document.createElement('p');
+            userDescription.innerHTML = "<em>It's you</em>";
+            userDescription.style.fontSize = '20px';
+            col2Div.appendChild(userDescription);
+          }
+
+          rowDiv.appendChild(col1Div);
+          rowDiv.appendChild(col2Div);
+
+          offcanvas_body.appendChild(rowDiv);
+        })
+        
+        
+        
         offcanvas.show();
       })
 
