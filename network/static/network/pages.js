@@ -151,7 +151,36 @@ document.addEventListener('DOMContentLoaded', function() {
   function create_icon_and_description(default_div, svg_d, svg_class, svg_color, content, description, fill_rule = null, svg2_d = null, num = 0){
     const main_container = document.querySelector(`#${default_div}`);
     main_container.innerHTML='';
+    if (default_div.includes('follow')){
+      main_container.addEventListener('mouseenter', function () {
+        this.style.border = `5px solid ${svg_color}`;
+      });
+    
+      main_container.addEventListener('mouseleave', function () {
+        this.style.border = 'none';
+      });
+      //offcanvas section
 
+      main_container.setAttribute('data-bs-toggle', 'offcanvas');
+      main_container.setAttribute('data-bs-target', '#offcanvas');
+      main_container.setAttribute('aria-controls', 'offcanvas');
+      
+
+      main_container.addEventListener('click', function(){
+        var offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvas"));
+        offcanvas.show();
+      })
+
+      var offcanvasElement = document.getElementById("offcanvas");
+      offcanvasElement.addEventListener("hidden.bs.offcanvas", function () {
+        document.body.classList.remove("offcanvas-open");
+        var backdrop = document.querySelector(".offcanvas-backdrop");
+        if (backdrop) {
+          backdrop.remove();
+        }
+      });
+
+    }
     const center_box = document.createElement('div');
     center_box.className = 'centerBox';
     
@@ -309,7 +338,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(updatedPost => {
               post.likes_count = updatedPost.likes_count;
               post.user_liked = updatedPost.user_liked;
-              //load_all_posts();
               callerFunction(callerParams);
             })
             .catch(error => {

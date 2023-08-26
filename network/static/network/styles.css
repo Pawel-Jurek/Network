@@ -110,3 +110,7 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.offcanvas-backdrop {
+  transition: opacity 0.01s ease-in-out;
+}
