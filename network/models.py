@@ -11,7 +11,7 @@ class User(AbstractUser):
         return self.following.all().count()
 
     def __str__(self):
-        return f'{self.username} followers: {self.followers_count()} following: {self.following_count()}'
+        return f'{self.username}'
 
 class Post(models.Model):
     content = models.CharField(max_length=500)

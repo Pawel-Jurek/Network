@@ -3,11 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#all_posts').addEventListener('click', () => load_all_posts());
     
     var user_is_logged_in = document.querySelector('#logout_button') !== null;
-    if (user_is_logged_in) {
+    if (user_is_logged_in) {     
       document.querySelector('#user_page').addEventListener('click', function() {
         user = this.textContent;
         load_user_page(user)
+        
       });
+      
       document.querySelector('#network').addEventListener('click', () => load_all_posts());
       document.querySelector('#new_post').addEventListener('click', () => create_new_post());
       document.querySelector('#following').addEventListener('click', () => load_following());
@@ -17,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function create_new_post() {
-    document.querySelector('#user_page_view').style.display = 'none';
+    //document.querySelector('#user_page_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'none';
     document.querySelector('#new_post_view').style.display = 'block';
     document.querySelector('#posts_view').style.display = 'none';
@@ -88,36 +90,33 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 
-  function load_user_page(author) {
-    document.querySelector('#new_post_view').style.display = 'none';
-    document.querySelector('#following_view').style.display = 'none';
-    document.querySelector('#user_page_view').style.display = 'block';
-    document.querySelector('#posts_view').style.display = 'none';
+  function load_offcanvas_content(users){
+    offcanvas_body = document.querySelector('.offcanvas-body'); 
+    offcanvas_body.innerHTML = '';
 
-    var user_is_logged_in = document.querySelector('#logout_button') !== null;
+    users.forEach(user => {
+      var rowDiv = document.createElement("div");
+      rowDiv.classList.add("row");
+      rowDiv.classList.add('highCenterRow');
 
-    fetch(`/user_info/${author}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log('data', data);
-      //-------------- user icon and button section
-      const username_col = document.querySelector('#username-col');
-      username_col.innerHTML = '';
+      var col1Div = document.createElement("div");
+      col1Div.classList.add("col-6");
+      col1Div.classList.add('highCenterCol');
+      col1Div.textContent = user.username;
+      col1Div.style.fontSize = '20px';
 
-      const userCenterBox = document.createElement('div');
-      const usernameHeader = document.createElement('h2');
-      usernameHeader.innerHTML = author;
-      usernameHeader.className = 'userHeading';
-      usernameHeader.style.fontWeight = "bold";
-      usernameHeader.style.fontSize = "1.5rem";
-      userCenterBox.appendChild(usernameHeader);
+      var col2Div = document.createElement("div");
+      col2Div.classList.add('highCenterCol');
+      col2Div.classList.add("col-6");
 
+      var user_is_logged_in = document.querySelector('#logout_button') !== null;
 
-      follow(user_is_logged_in, author, '#username-col',data.is_follower, userCenterBox);
-      /*
-      if(user_is_logged_in && author !== document.querySelector('#user_page').textContent){
+      //follow(user_is_logged_in, searched_user, '#followButtonOffCanvas', user.is_followed); //opcja docelowa
+      // wersja prowizoryczna
+
+      if(user_is_logged_in && user.username !== document.querySelector('#user_page').textContent){
         const followButton = document.createElement('button');
-        if(data.is_follower){
+        if(user.is_followed){
           followButton.className = "btn btn-primary";
           followButton.innerHTML = "Unfollow :(";
         } else {
@@ -126,32 +125,86 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         followButton.addEventListener('click', function() {         
-          fetch(`/follow/${author}`, {
+          fetch(`/follow/${user.username}`, {
             method: 'PUT'
           })
           .then(updatedUser => {
-            data.is_follower = updatedUser.is_follower
-            load_user_page(author);
+            user.is_followed = updatedUser.is_follower
+            offcanvas.hide();
+            load_user_page(user.username);
+
           })
           .catch(error => {
             console.error('Error', error);
           });
         });
         
-        followButton.style.marginTop = "10px";
         followButton.style.width = '120px';
-
-        userCenterBox.appendChild(followButton);
+        col2Div.appendChild(followButton);
 
       } else if(user_is_logged_in) {
-        const userDescription = document.createElement('h3');
-        userDescription.innerHTML = "<em>Welcome on your Page:)</em>";
-        userDescription.style.fontSize = "1.2rem";
-        userCenterBox.appendChild(userDescription);
+        const userDescription = document.createElement('p');
+        userDescription.innerHTML = "<em>It's you</em>";
+        userDescription.style.fontSize = '20px';
+        col2Div.appendChild(userDescription);
       }
-      username_col.appendChild(userCenterBox);
-      */
+
+      rowDiv.appendChild(col1Div);
+      rowDiv.appendChild(col2Div);
+
+      offcanvas_body.appendChild(rowDiv);
+      })
+  }
+
+
+  function load_user_page() {
+    document.querySelector('#new_post_view').style.display = 'none';
+    document.querySelector('#following_view').style.display = 'none';
+    //document.querySelector('#user_page_view').style.display = 'block';
+    document.querySelector('#posts_view').style.display = 'none';
+
+    var user_is_logged_in = document.querySelector('#logout_button') !== null;
+
+    fetch(`/user_info/${user}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log('data', data);
       
+      user = document.querySelector('#userHeading').textContent;
+      const userCenterBox = document.querySelector('#userCenterBox');
+      
+      // following button and mechanism or text displaying
+      follow(user_is_logged_in, user, '#username-col', data.is_follower, userCenterBox);
+
+      // put numbers of counted fields
+      document.querySelector('#followersCount').textContent = data.followersCount;
+      document.querySelector('#followingCount').textContent = data.followingCount;
+      document.querySelector('#postsCount').textContent = data.postsCount;
+
+
+      // offcanvas body content
+      // setting offcanvas content for followers button
+      document.querySelector('#followers-col').addEventListener('click', function(){
+        document.querySelector('#offcanvasLabel').innerHTML = "Followers:";
+        load_offcanvas_content(data.allFollowers);
+      })
+
+      // setting offcanvas content for following button
+      document.querySelector('#following-col').addEventListener('click', function(){
+        document.querySelector('#offcanvasLabel').innerHTML = "Following:";
+        load_offcanvas_content(data.allFollowing);
+      })
+
+      // loading posts created by user which page we entered
+      load_posts('created_by', '#userPosts', `${user}'s posts`,load_user_page, user, user);
+
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+      
+/*     
       //-------------- followers section
       const followersDiv = 'followers-col'
       const people_icon_d = "M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z";
@@ -196,6 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   
   }
+  */
+/*
 
   function create_icon_and_description(default_div, svg_d, svg_class, svg_color, content, description, users, fill_rule = null, svg2_d = null, num = 0, refresh = false){
     const main_container = document.querySelector(`#${default_div}`);
@@ -288,19 +343,20 @@ document.addEventListener('DOMContentLoaded', function() {
           offcanvas_body.appendChild(rowDiv);
         })
         
-        
+        offcanvas._element.addEventListener('hide.bs.offcanvas', function () {
+          offcanvas_body.removeAttribute('style');
+        });
+
+        offcanvas._element.addEventListener('hidden.bs.offcanvas', function() {
+          var backdrop = document.querySelector(".offcanvas-backdrop");
+          if (backdrop) {
+              backdrop.remove();
+          }
+        });
         
         offcanvas.show();
       })
 
-      var offcanvasElement = document.getElementById("offcanvas");
-      offcanvasElement.addEventListener("hidden.bs.offcanvas", function () {
-        document.body.classList.remove("offcanvas-open");
-        var backdrop = document.querySelector(".offcanvas-backdrop");
-        if (backdrop) {
-          backdrop.remove();
-        }
-      });
 
     }
     const center_box = document.createElement('div');
@@ -352,9 +408,10 @@ document.addEventListener('DOMContentLoaded', function() {
     main_container.appendChild(center_box);
   }
 
+  */
 
   function load_following() {
-    document.querySelector('#user_page_view').style.display = 'none';
+    //document.querySelector('#user_page_view').style.display = 'none';
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'block';
     document.querySelector('#posts_view').style.display = 'none';
@@ -364,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   function load_all_posts(){
-    document.querySelector('#user_page_view').style.display = 'none';
+    //document.querySelector('#user_page_view').style.display = 'none';
     document.querySelector('#following_view').style.display = 'none';
     document.querySelector('#new_post_view').style.display = 'none';
     document.querySelector('#posts_view').style.display = 'block';

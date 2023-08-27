@@ -9,7 +9,7 @@ body {
   border-radius: 10px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  text-align: left;
 }
 
 #post_content {
@@ -41,19 +41,7 @@ body {
 }
 
 
-/* Styl dla ikony serca */
-.heart-icon {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-color: red;
-  border: 2px solid red;
-  border-radius: 50%;
-  position: relative;
-  margin-right: 5px; 
-}
-
-.count {
+.info-text {
   font-weight: bold;
 }
 
@@ -81,10 +69,13 @@ body {
 .author-clickable {
   text-decoration: none;
   cursor: pointer;
+  font-weight: bold;
+  color: black;
 }
 
 .author-clickable:hover {
   text-decoration: underline;
+  color: black;
 }
 
 #user_page_view{
@@ -97,7 +88,7 @@ body {
   place-items: center;
 }
 
-.centerBox{
+.info-text{
   text-align: center;
 }
 
@@ -111,10 +102,6 @@ body {
   margin-bottom: 10px;
 }
 
-.offcanvas-backdrop {
-  transition: opacity 0.01s ease-in-out;
-}
-
 #highCenterRow{
   display: flex;
   align-items: flex-start;
@@ -123,4 +110,20 @@ body {
 #highCenterCol{
   flex: 1;
   text-align: left;
+}
+
+#following-col{
+  border: 5px solid transparent;
+}
+
+#following-col:hover {
+  border-color: #033387;
+}
+
+#followers-col{
+  border: 5px solid transparent;
+}
+
+#followers-col:hover {
+  border-color: #b82d14;
 }

@@ -11,7 +11,8 @@ from .models import Post, User
 
 
 def index(request):
-    return render(request, "network/index.html")
+    posts_list = [post.serialize() for post in Post.objects.all().order_by("-created_date")]
+    return render(request, "network/index.html", {"posts": posts_list})
 
 
 def login_view(request):
@@ -117,7 +118,12 @@ def like_post(request, post_id):
         else:
             post.likes.remove(request.user)
         post.save()
-        return HttpResponse(status=204)
+        
+        response_data = {
+            "is_liked": request.user in post.likes.all(),
+            "likes_count": post.likes.count()
+        }
+        return JsonResponse(response_data, status=200)
 
     else:
         return JsonResponse({
@@ -175,3 +181,11 @@ def follow(request, username):
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
+
+
+def user_page(request, username):  
+
+
+    return render(request, 'network/user.html',{
+        'username': username
+    })

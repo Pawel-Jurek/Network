@@ -2,55 +2,32 @@
 {% load static %}
 
 {% block body %}
-    <div id="new_post_view">
-        <div class="post">
-            <form id="post_form">
-                <h2>New Post</h2>
-                <textarea id="post_content"></textarea>
-                <input id="submit_button" value="Post" type="submit" class="btn btn-primary"/>
-            </form>
-        </div>
-    </div>
-
-    <div id="following_view">
-    </div>
-
-    <div id="user_page_view">
-        <div id="user_info_bar" class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-            <div class="container" style="margin: 0;">
-                <div class="row">
-                    <div class="col-1" style="text-align: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                        </svg>
-                    </div>
-                    <div class="col-3" id="username-col"></div>
-                    <div class="col-2" id="followers-col"></div>
-                    <div class="col-2" id="following-col"></div>
-                    <div class="col-2" id="posts-col"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                             
-            </div>
-        </div>
-
-        <div id="userPosts">
-        </div>
-    </div>
-
+    <h1>Posts</h1>
     <div id="posts_view">
+        {% for post in posts %}
+            <div class="post">
+                <a href="{% url 'user_page' post.author %}" class="author-clickable">{{ post.author }}</a><br>
+                <em>{{ post.created_date }}</em><br>             
+                <hr>{{ post.content }}<hr>
+                <button type="button" class="btn btn-outline-danger heart-button" data-id="{{ post.id }}" style="display: flex; align-items: center;">
+                    <span class="heart-icon" style="display: flex; align-items: center;">
+                        {% if user.is_authenticated and user.username in post.likes %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                            </svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                            </svg>
+                        {% endif %}
+                    </span>
+                    <span class="info-text likesCount" style="font-size: 18px; padding-left: 5px;">{{ post.likes_count }}</span>
+                </button>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/pages.js' %}"></script>
+    <script src="{% static 'network/index.js' %}"></script>
 {% endblock %}

@@ -15,24 +15,24 @@
     <body>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" id="network" href="#">Network</a>
+            <a class="navbar-brand" id="network" role="button">Network</a>
           
             <div>
               <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a id="user_page" class="nav-link" href="#"><strong>{{ user.username }}</strong></a>
+                        <a id="user_page" class="nav-link" role="button" href="{%url 'user_page' user.username %}"><strong>{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
-                  <a id="all_posts" class="nav-link" href="{% url 'index' %}">All Posts</a>
+                  <a id="all_posts" class="nav-link" role="button" href="{%url 'index' %}">All Posts</a>
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a id="new_post" class="nav-link" href="#">New Post</a>
+                        <a id="new_post" class="nav-link" role="button" href="{%url 'index' %}">New Post</a>
                     </li>
                     <li class="nav-item">
-                        <a id="following" class="nav-link" href="#">Following</a>
+                        <a id="following" class="nav-link" role="button" href="{%url 'index' %}">Following</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="logout_button" href="{% url 'logout' %}">Log Out</a>
