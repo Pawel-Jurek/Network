@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -69,17 +69,33 @@ def register(request):
 @csrf_exempt
 @login_required
 def new_post(request):
-    data = json.loads(request.body)
-    content = data.get("content", "")
-    if (content is None):
-        return JsonResponse({"message": "Your post content is Empty."}, status=400)
-    else:
-        post = Post(
-            author = request.user,
-            content = content   
-        )
-        post.save()
-        return JsonResponse({"message": "Post created successfully."}, status=201)
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            post = Post(
+                author = request.user,
+                content = content   
+            )
+            post.save()
+            return redirect('/')
+    return render(request, "network/new_post.html")
+
+
+@login_required
+def edit_post(request, post_id):   
+    if request.method == 'POST' and Post.objects.get(pk=post_id).author == request.user:
+        data = json.loads(request.body)
+        content = data.get('content')
+        if(content):
+            post = Post.objects.get(pk=post_id)
+            post.content = content
+            post.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'error': 'content cannot be empty'})
+        
+    return JsonResponse({'status': 'failure'})
+    
 
 
 def get_posts(category, username = None):
@@ -189,24 +205,28 @@ def follow(request, username, page_owner_name):
         }, status=400)
 
 
-def user_page(request, username):  
-    page_owner = User.objects.get(username = username)
-    posts_list = Post.objects.filter(author = page_owner).order_by("-created_date").all()
-    
-    followersCount = page_owner.followers_count()
-    followingCount = page_owner.following_count()
-
-    return render(request, 'network/user.html',{
-        "username": username,
-        "followingCount": followingCount,
-        "followersCount": followersCount,
-        "postsCount": posts_list.count(),
-        "is_follower": request.user in page_owner.followers.all(),
-        "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()],
-        "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()],
-        "userPosts": [post.serialize() for post in Post.objects.filter(author = page_owner).order_by("-created_date")]
+def user_page(request, username):
+    try:
+        page_owner = User.objects.get(username=username)
+        posts_list = Post.objects.filter(author = page_owner).order_by("-created_date").all()
         
-    })
+        followersCount = page_owner.followers_count()
+        followingCount = page_owner.following_count()
+
+        return render(request, 'network/user.html',{
+            "username": username,
+            "followingCount": followingCount,
+            "followersCount": followersCount,
+            "postsCount": posts_list.count(),
+            "is_follower": request.user in page_owner.followers.all(),
+            "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()],
+            "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()],
+            "userPosts": [post.serialize() for post in Post.objects.filter(author = page_owner).order_by("-created_date")]
+            
+        })
+    except User.DoesNotExist:
+        return HttpResponse('User not found', status=404)
+    
 
 @csrf_exempt
 @login_required 

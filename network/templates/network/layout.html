@@ -29,7 +29,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a id="new_post" class="nav-link" role="button" href="{%url 'index' %}">New Post</a>
+                        <a id="new_post" class="nav-link" role="button" href="{%url 'new_post' %}">New Post</a>
                     </li>
                     <li class="nav-item">
                         <a id="following" class="nav-link" role="button" href="{%url 'following_posts' user.username %}">Following</a>

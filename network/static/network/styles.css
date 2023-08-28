@@ -12,16 +12,16 @@ body {
   text-align: left;
 }
 
-#post_content {
+#post_content, .editTextarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
-  height: calc(80vh - 110px);
+  height: 150px;
 }
 
-#submit_button {
+#submit_button, .submitEditButton {
   margin-top: 10px;
   background-color: #3498db;
   color: white;
@@ -40,7 +40,6 @@ body {
   text-align: left;
 }
 
-
 .info-text {
   font-weight: bold;
 }
@@ -49,14 +48,6 @@ body {
   margin-top: 10px; 
 }
 
-.heart-icon.user-liked {
-  background-color: white;
-  color: red;
-}
-
-.count.user-liked {
-  color: red;
-}
 
 .container{
   margin: 0; 
@@ -131,4 +122,15 @@ body {
 #main-follow-button{
   margin-top: 10px;
   width: 120px;
+}
+
+.editButton{
+  text-decoration: none;
+  cursor: pointer;
+  color: rgb(17, 70, 195);
+}
+
+.editButton:hover{
+  color: rgb(17, 70, 195);
+  text-decoration: underline;
 }
