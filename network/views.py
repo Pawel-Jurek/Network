@@ -11,8 +11,8 @@ from .models import Post, User
 
 
 def index(request):
-    posts_list = [post.serialize() for post in Post.objects.all().order_by("-created_date")]
-    return render(request, "network/index.html", {"posts": posts_list})
+    posts_list = get_posts('all')
+    return render(request, "network/index.html", {"posts": [post.serialize() for post in posts_list]})
 
 
 def login_view(request):
@@ -82,22 +82,22 @@ def new_post(request):
         return JsonResponse({"message": "Post created successfully."}, status=201)
 
 
-def posts(request, category, username = None):
+def get_posts(category, username = None):
     if category == "all":
         posts_list = Post.objects.all()
-    elif category == "followings" and request.user.is_authenticated:
-        user = User.objects.get(username = request.user.username)
+    elif category == "following":
+        user = User.objects.get(username = username)
         followings = user.following.all()
         posts_list = Post.objects.filter(author__in=followings)
-    elif category == "created_by" and request.user.is_authenticated:       
+    elif category == "created_by":       
         author = User.objects.get(username=username)
         posts_list = Post.objects.filter(author=author)
     else:
-        return JsonResponse({"error": "Invalid mailbox."}, status=400)
+        return []
 
     posts_list = posts_list.order_by("-created_date").all()
 
-    return JsonResponse([post.serialize() for post in posts_list], safe=False)
+    return posts_list
 
 
 @csrf_exempt
@@ -163,10 +163,11 @@ def user_info(request, username):
 
 @csrf_exempt
 @login_required 
-def follow(request, username):
+def follow(request, username, page_owner_name):
     if request.method == "PUT":
         try:
             user_to_follow = User.objects.get(username = username)
+            page_owner = User.objects.get(username = page_owner_name)
         except Post.DoesNotExist:
             return JsonResponse({"error": "User does not exist"}, status=404)
   
@@ -175,7 +176,12 @@ def follow(request, username):
         else:
             user_to_follow.followers.remove(request.user)
         user_to_follow.save()
-        return HttpResponse(status=204)
+        response_data = {
+            "is_followed": request.user in user_to_follow.followers.all(),
+            "followingCount": page_owner.following_count(),
+            "followersCount": page_owner.followers_count()
+        }
+        return JsonResponse(response_data, status=200)
 
     else:
         return JsonResponse({
@@ -184,8 +190,36 @@ def follow(request, username):
 
 
 def user_page(request, username):  
-
+    page_owner = User.objects.get(username = username)
+    posts_list = Post.objects.filter(author = page_owner).order_by("-created_date").all()
+    
+    followersCount = page_owner.followers_count()
+    followingCount = page_owner.following_count()
 
     return render(request, 'network/user.html',{
-        'username': username
+        "username": username,
+        "followingCount": followingCount,
+        "followersCount": followersCount,
+        "postsCount": posts_list.count(),
+        "is_follower": request.user in page_owner.followers.all(),
+        "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()],
+        "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()],
+        "userPosts": [post.serialize() for post in Post.objects.filter(author = page_owner).order_by("-created_date")]
+        
     })
+
+@csrf_exempt
+@login_required 
+def get_users(request, type, username):
+    page_owner = User.objects.get(username = username)
+    if type == 'following':
+        users = [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()]
+    elif type == 'followers':
+        users = [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()]
+    else:
+        users = []
+    return JsonResponse({'users': users}, status=200)
+
+def following_posts(request, user):
+    posts_list = get_posts('following', user)
+    return render(request, "network/following_posts.html", {"posts": [post.serialize() for post in posts_list]})

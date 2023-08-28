@@ -127,3 +127,8 @@ body {
 #followers-col:hover {
   border-color: #b82d14;
 }
+
+#main-follow-button{
+  margin-top: 10px;
+  width: 120px;
+}
