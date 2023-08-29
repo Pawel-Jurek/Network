@@ -7,6 +7,9 @@
         {% for post in posts %}
             {% include 'network\display_post_template.html' %}
         {% endfor %}
+        {% if pagesCount > 1 %}
+            {% include 'network\pagination.html' %}
+        {% endif %}
     </div>
 {% endblock %}
 

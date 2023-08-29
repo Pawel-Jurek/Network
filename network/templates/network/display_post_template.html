@@ -2,7 +2,7 @@
     {% if user.username == post.author %}
         <a class="editButton" role="button" data-postid="{{ post.id }}">Edit</a><br>
     {% endif %}
-    <a href="{% url 'user_page' post.author %}" class="author-clickable">{{ post.author }}</a><br>
+    <a href="{% url 'user_page' post.author 1 %}" class="author-clickable">{{ post.author }}</a><br>
     <em>{{ post.created_date }}</em><br>
     <hr>
     <div id="content{{post.id}}" class="post_content">
@@ -42,7 +42,7 @@
                 <div class="comments-section{{post.id}}" style="margin-bottom: 10px;">Comments:</div>
                 {% for comment in post.comments %}
                     <div class="comment" id="comment{{comment.id}}">
-                        <a href="{% url 'user_page' post.author %}" class="author-clickable">{{ comment.author }}</a><br>
+                        <a href="{% url 'user_page' post.author 1 %}" class="author-clickable">{{ comment.author }}</a><br>
                         <em>{{ comment.created_date }}</em><br>
                         <a>{{comment.content}}</a>
                         {% if user.username == comment.author %}

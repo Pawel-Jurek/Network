@@ -1,0 +1,24 @@
+<div style="padding: 5px; margin-top: 5px;">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% for number in pages %}
+                {% if number == currentPage %}             
+                    <li class="page-item active" style="height: 50px; width: 60px;">
+                        <a class="page-link" style="text-align: center;" href="{% if variable %}{% url page variable number %}{% else %}{% url page number %}{% endif %}">
+                            {{number}}
+                        </a>
+                    </li>
+                {% else %}             
+                    <li class="page-item" style="height: 50px; width: 60px;">
+                        <a class="page-link" style="text-align: center;" href="{% if variable %}{% url page variable number %}{% else %}{% url page number %}{% endif %}">
+                            {{number}}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
+
+
+

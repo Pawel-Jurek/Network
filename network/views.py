@@ -1,4 +1,5 @@
 import json
+import math
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -10,9 +11,16 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Comment, Post, User
 
 
-def index(request):
-    posts_list = get_posts('all')
-    return render(request, "network/index.html", {"posts": [post.serialize() for post in posts_list]})
+def index(request, currentPage = 1):
+    posts_list, pagesCount = get_posts('all', currentPage)
+    return render(request, "network/index.html", {
+        "posts": [post.serialize() for post in posts_list],
+        "page": 'index_pages',
+        "variable": "",
+        "currentPage": currentPage,
+        "pagesCount": pagesCount,
+        "pages": list(range(1, pagesCount+1))
+        })
 
 
 def login_view(request):
@@ -98,7 +106,7 @@ def edit_post(request, post_id):
     
 
 
-def get_posts(category, username = None):
+def get_posts(category, first_page = 1, username = None):
     if category == "all":
         posts_list = Post.objects.all()
     elif category == "following":
@@ -112,8 +120,12 @@ def get_posts(category, username = None):
         return []
 
     posts_list = posts_list.order_by("-created_date").all()
+    postsCount = math.ceil(posts_list.count() / 5)
+    start_index = (first_page - 1) * 5
 
-    return posts_list
+    sliced_posts = posts_list[start_index : start_index + 5]
+
+    return (sliced_posts, postsCount)
 
 
 @csrf_exempt
@@ -205,10 +217,11 @@ def follow(request, username, page_owner_name):
         }, status=400)
 
 
-def user_page(request, username):
+def user_page(request, username, currentPage = 1):
     try:
         page_owner = User.objects.get(username=username)
-        posts_list = Post.objects.filter(author = page_owner).order_by("-created_date").all()
+        posts_list, pagesCount = get_posts("created_by", currentPage, page_owner.username)
+        #posts_list = Post.objects.filter(author = page_owner).order_by("-created_date").all()
         
         followersCount = page_owner.followers_count()
         followingCount = page_owner.following_count()
@@ -221,7 +234,12 @@ def user_page(request, username):
             "is_follower": request.user in page_owner.followers.all(),
             "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()],
             "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()],
-            "userPosts": [post.serialize() for post in Post.objects.filter(author = page_owner).order_by("-created_date")]
+            "userPosts": [post.serialize() for post in posts_list],
+            "page": "user_page",
+            "variable": username,
+            "currentPage": currentPage,
+            "pagesCount": pagesCount,
+            "pages": list(range(1, pagesCount+1))
             
         })
     except User.DoesNotExist:
@@ -241,9 +259,16 @@ def get_users(request, type, username):
     return JsonResponse({'users': users}, status=200)
 
 
-def following_posts(request, user):
-    posts_list = get_posts('following', user)
-    return render(request, "network/following_posts.html", {"posts": [post.serialize() for post in posts_list]})
+def following_posts(request, user, currentPage = 1):
+    posts_list, pagesCount = get_posts('following', currentPage, user)
+    return render(request, "network/following_posts.html", {
+        "posts": [post.serialize() for post in posts_list],
+        "page": "following_posts",
+        "variable": user,
+        "currentPage": currentPage,
+        "pagesCount": pagesCount,
+        "pages": list(range(1, pagesCount+1))
+        })
 
 
 @login_required

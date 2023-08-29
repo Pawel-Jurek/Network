@@ -21,7 +21,7 @@
               <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a id="user_page" class="nav-link" role="button" href="{%url 'user_page' user.username %}"><strong>{{ user.username }}</strong></a>
+                        <a id="user_page" class="nav-link" role="button" href="{%url 'user_page' user.username 1 %}"><strong>{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
@@ -32,7 +32,7 @@
                         <a id="new_post" class="nav-link" role="button" href="{%url 'new_post' %}">New Post</a>
                     </li>
                     <li class="nav-item">
-                        <a id="following" class="nav-link" role="button" href="{%url 'following_posts' user.username %}">Following</a>
+                        <a id="following" class="nav-link" role="button" href="{%url 'following_posts' user.username 1 %}">Following</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="logout_button" href="{% url 'logout' %}">Log Out</a>
