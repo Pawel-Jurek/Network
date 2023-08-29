@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Post, User
+from .models import Comment, Post, User
 
 
 def index(request):
@@ -240,6 +240,26 @@ def get_users(request, type, username):
         users = []
     return JsonResponse({'users': users}, status=200)
 
+
 def following_posts(request, user):
     posts_list = get_posts('following', user)
     return render(request, "network/following_posts.html", {"posts": [post.serialize() for post in posts_list]})
+
+
+@login_required
+def add_comment(request, post_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        content = data.get('content')
+        if(content):
+            comment = Comment(
+                author = request.user,
+                content = content,
+                post = Post.objects.get(pk = post_id)
+            )
+            comment.save()
+            return JsonResponse(comment.serialize())
+        else:
+            return JsonResponse({'error': 'content cannot be empty'})
+        
+    return JsonResponse({'status': 'failure'})

@@ -18,7 +18,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
-  height: 150px;
+  height: calc(50vh - 110px);
 }
 
 #submit_button, .submitEditButton {
