@@ -1,0 +1,106 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div id="user_page_view">
+        <div id="user_info_bar" class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+            <div class="container" style="margin: 0;">
+                <div class="row">
+                    <!--user logo-->
+                    <div class="col-1" style="text-align: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                    </div>            
+                    
+                    <!--username and follow button-->
+                    <div class="col-3" id="username-col">
+                        <div id="userCenterBox">
+                            <h2 id="userHeading" style="font-weight: bold; font-size: 1.5rem;">{{username}}</h2>
+                        </div>
+                        {% if user.is_authenticated %}
+                            {% if user.username != username %}
+                                {% if is_follower %}
+                                    <button class="btn btn-primary" id="main-follow-button">Unfollow</button>
+                                {% else %}
+                                    <button class="btn btn-outline-primary" id="main-follow-button">Follow</button>
+                                {% endif %}
+                            {% else %}
+                                <h3 style="font-size: 1.2rem;"><em>Welcome on your profile Page.</em></h3>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div class="col-2" id="followers-col" role='button' data-followers="{{allFollowers}}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                        <div class="centerBox">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#b82d14" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                            </svg>
+                            <span id='followersCount' class="info-text" style="font-size: 18px; padding-left: 5px;">
+                                {{followersCount}}
+                            </span>
+                            <br>
+                            <span class="info-text" style="font-size: 18px; padding-left: 5px;">
+                                Followers
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-2" id="following-col" role='button' data-following="{{allFollowing}}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                        <div class="centerBox">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#033387" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                            </svg>
+                            <span id='followingCount' class="info-text" style="font-size: 18px; padding-left: 5px;">
+                                {{followingCount}}
+                            </span>
+                            <br>
+                            <span class="info-text" style="font-size: 18px; padding-left: 5px;">
+                                Following
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-2" id="posts-col">
+                        <div class="centerBox">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#1b8729" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                            </svg>
+                            <span id="postsCount" class="info-text" style="font-size: 18px; padding-left: 5px;">
+                                {{postsCount}}
+                            </span>
+                            <br>
+                            <span class="info-text" style="font-size: 18px; padding-left: 5px;">
+                                Written Posts
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                            
+            </div>
+        </div>
+
+        <div id="userPosts">
+            {% for post in userPosts %}
+                {% include 'network\display_post_template.html' %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/user.js' %}"></script>
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

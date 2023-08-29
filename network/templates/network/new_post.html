@@ -1,0 +1,23 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div id="new_post_view">
+        <div class="post">
+            <form id="post_form" method="post">
+                {% csrf_token %}
+                <h2>New Post</h2>
+                <textarea id="post_content" name="content" rows="4" cols="50"></textarea>
+                <div style="text-align: center;">
+                    <input id="submit_button" value="Post" type="submit" class="btn btn-primary"/>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

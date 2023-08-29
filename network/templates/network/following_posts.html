@@ -1,0 +1,17 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div id="followingPosts">
+        {% for post in posts %}
+            {% include 'network\display_post_template.html' %}
+        {% endfor %}
+    </div>
+
+    
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
