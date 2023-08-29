@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -263,3 +263,11 @@ def add_comment(request, post_id):
             return JsonResponse({'error': 'content cannot be empty'})
         
     return JsonResponse({'status': 'failure'})
+
+@login_required
+def delete_comment(request, comment_id):
+    if request.method == 'PUT' and request.user == Comment.objects.get(pk = comment_id).author:
+        comment_to_delete = get_object_or_404(Comment, pk=comment_id)
+        comment_to_delete.delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'})

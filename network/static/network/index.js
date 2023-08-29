@@ -126,4 +126,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
     })
+
+
+    const deleteButtons = document.querySelectorAll('.delete_comment');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = button.getAttribute('data-id');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch(`/delete_comment/${commentId}`, {
+                method: 'PUT',
+                headers: {'X-CSRFToken': csrfToken}
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                const comment = document.querySelector(`#comment${commentId}`);
+                comment.innerHTML = '';
+            })
+            return false;
+
+        })
+    })
 });

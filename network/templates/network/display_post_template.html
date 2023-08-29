@@ -39,14 +39,20 @@
     <div id="comments">
         <div class="collapse" id="collapse{{post.id}}">
             <div class="card card-body">
-                <div class="comments-section">Comments:</div>
+                <div class="comments-section">Comments:</div><hr>
                 {% for comment in post.comments %}
-                    <div class="comment">
+                    <div class="comment" id="comment{{comment.id}}">
                         <a href="{% url 'user_page' post.author %}" class="author-clickable">{{ comment.author }}</a><br>
                         <em>{{ comment.created_date }}</em><br>
                         <a>{{comment.content}}</a>
+                        {% if user.username == comment.author %}
+                            <div>
+                                <button class="btn btn-danger delete_comment" data-id="{{comment.id}}" style="margin-top: 10px;">Delete comment</button>
+                            </div>
+                        {% endif %}
                         <hr>
                     </div>
+                    
                 {% endfor %}
                 <form id="comment_form{{post.id}}" class="input-group mb-3" method="post">
                     {% csrf_token %}
