@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(result => {
                     const newCommentElement = document.createElement('div');
                     newCommentElement.className = 'comment';
+                    newCommentElement.id = `comment${result.id}`;
 
 
                     const authorLink = document.createElement('a');
@@ -105,15 +106,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     commentContent.textContent = result.content;
 
                     const hr = document.createElement('hr');
+                    const defaultDiv = document.createElement('div');
+                    const delete_button = document.createElement('button');
+                    delete_button.className = 'btn btn-danger';
+                    delete_button.style.marginBottom = '10px';
+                    delete_button.setAttribute('data-id', result.id);
+                    delete_button.textContent = 'Delete comment';
+                    delete_button.addEventListener('click', function(){
+                        delete_post(delete_button);
+                    })
 
                     newCommentElement.appendChild(authorLink);
                     newCommentElement.appendChild(document.createElement('br'));
                     newCommentElement.appendChild(createdDate);
                     newCommentElement.appendChild(document.createElement('br'));
                     newCommentElement.appendChild(commentContent);
+                    defaultDiv.appendChild(delete_button);
+                    newCommentElement.appendChild(defaultDiv);
                     newCommentElement.appendChild(hr);
+                    
 
-                    const commentsSection = document.querySelector('.comments-section');
+                    const commentsSection = document.querySelector(`.comments-section${postId}`);
                     commentsSection.appendChild(newCommentElement);
 
                     document.querySelector(`#commentTextarea${postId}`).value='';
@@ -131,20 +144,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteButtons = document.querySelectorAll('.delete_comment');
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const commentId = button.getAttribute('data-id');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            fetch(`/delete_comment/${commentId}`, {
-                method: 'PUT',
-                headers: {'X-CSRFToken': csrfToken}
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log(result);
-                const comment = document.querySelector(`#comment${commentId}`);
-                comment.innerHTML = '';
-            })
-            return false;
-
+            delete_post(button);
         })
     })
 });
+
+function delete_post(button){
+    const commentId = button.getAttribute('data-id');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/delete_comment/${commentId}`, {
+        method: 'PUT',
+        headers: {'X-CSRFToken': csrfToken}
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log(result);
+        const comment = document.querySelector(`#comment${commentId}`);
+        comment.innerHTML = '';
+    })
+    return false;
+}

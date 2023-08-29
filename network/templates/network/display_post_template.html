@@ -39,7 +39,7 @@
     <div id="comments">
         <div class="collapse" id="collapse{{post.id}}">
             <div class="card card-body">
-                <div class="comments-section">Comments:</div><hr>
+                <div class="comments-section{{post.id}}" style="margin-bottom: 10px;">Comments:</div>
                 {% for comment in post.comments %}
                     <div class="comment" id="comment{{comment.id}}">
                         <a href="{% url 'user_page' post.author %}" class="author-clickable">{{ comment.author }}</a><br>
