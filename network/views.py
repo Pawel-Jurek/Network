@@ -74,7 +74,6 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-@csrf_exempt
 @login_required
 def new_post(request):
     if request.method == 'POST':
@@ -90,7 +89,7 @@ def new_post(request):
 
 
 @login_required
-def edit_post(request, post_id):   
+def edit_post(request, post_id):
     if request.method == 'POST' and Post.objects.get(pk=post_id).author == request.user:
         data = json.loads(request.body)
         content = data.get('content')
@@ -128,13 +127,8 @@ def get_posts(category, first_page = 1, username = None):
     return (sliced_posts, postsCount)
 
 
-@csrf_exempt
 @login_required
 def like_post(request, post_id):
-    try:
-        post = Post.objects.get(pk = post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
     if request.method == "PUT":
         try:
             post = Post.objects.get(pk=post_id)
@@ -157,36 +151,6 @@ def like_post(request, post_id):
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
-
-@csrf_exempt
-@login_required   
-def get_user(request):
-    return JsonResponse({
-        "user": request.user.username
-    })
-
-
-def user_info(request, username):
-    post_author = User.objects.get(username = username)
-    posts_list = Post.objects.filter(author = post_author).order_by("-created_date").all()
-    
-    followersCount = post_author.followers_count()
-    followingCount = post_author.following_count()
-    
-    print(f'\n\n{[user.username for user in post_author.following.all()]}\n\n')
-
-    jsonData = {
-        "followingCount": followingCount,
-        "followersCount": followersCount,
-        "postsCount": posts_list.count(),
-        "is_follower": request.user in post_author.followers.all(),
-        "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in post_author.followers.all()],
-        "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in post_author.following.all()]
-    }
-    for post in posts_list:
-        jsonData.update(post.serialize())
-
-    return JsonResponse(jsonData, safe=False)
 
 
 @csrf_exempt
@@ -221,7 +185,6 @@ def user_page(request, username, currentPage = 1):
     try:
         page_owner = User.objects.get(username=username)
         posts_list, pagesCount = get_posts("created_by", currentPage, page_owner.username)
-        #posts_list = Post.objects.filter(author = page_owner).order_by("-created_date").all()
         
         followersCount = page_owner.followers_count()
         followingCount = page_owner.following_count()
@@ -232,8 +195,8 @@ def user_page(request, username, currentPage = 1):
             "followersCount": followersCount,
             "postsCount": posts_list.count(),
             "is_follower": request.user in page_owner.followers.all(),
-            "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()],
-            "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()],
+            "allFollowers": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.followers.all()] if request.user.is_authenticated else [],
+            "allFollowing": [{'username': user.username, 'is_followed': user in request.user.following.all()} for user in page_owner.following.all()] if request.user.is_authenticated else [],
             "userPosts": [post.serialize() for post in posts_list],
             "page": "user_page",
             "variable": username,
@@ -246,7 +209,6 @@ def user_page(request, username, currentPage = 1):
         return HttpResponse('User not found', status=404)
     
 
-@csrf_exempt
 @login_required 
 def get_users(request, type, username):
     page_owner = User.objects.get(username = username)
@@ -259,6 +221,7 @@ def get_users(request, type, username):
     return JsonResponse({'users': users}, status=200)
 
 
+@login_required
 def following_posts(request, user, currentPage = 1):
     posts_list, pagesCount = get_posts('following', currentPage, user)
     return render(request, "network/following_posts.html", {
@@ -288,6 +251,8 @@ def add_comment(request, post_id):
             return JsonResponse({'error': 'content cannot be empty'})
         
     return JsonResponse({'status': 'failure'})
+
+
 
 @login_required
 def delete_comment(request, comment_id):

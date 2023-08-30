@@ -1,24 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
   const followButton = document.querySelector('#main-follow-button');
+  var user_is_logged_in = document.querySelector('#logout_button') !== null;
   const user = document.querySelector('#userHeading').textContent;
   if (followButton) {
     followButton.addEventListener('click', function() {
-      follow(user, followButton);
+      if(user_is_logged_in){
+        follow(user, followButton);
+      } else {
+        alert('If you want follow users, you must be logged in');
+      }     
     });
   }
   // offcanvas body content
   // setting offcanvas content for followers button
   followersDiv = document.querySelector('#followers-col')
   followersDiv.addEventListener('click', function(){
-    document.querySelector('#offcanvasLabel').innerHTML = "Followers:";
-    load_offcanvas_content('followers', user);
+    if(user_is_logged_in){
+      document.querySelector('#offcanvasLabel').innerHTML = "Followers:";
+      load_offcanvas_content('followers', user);
+    } else {
+      alert("If you want to see followers, You must be logged in")
+    }
+    
   })
 
   // setting offcanvas content for following button
   followingDiv = document.querySelector('#following-col')
   followingDiv.addEventListener('click', function(){
-    document.querySelector('#offcanvasLabel').innerHTML = "Following:";
-    load_offcanvas_content('following', user);
+    if(user_is_logged_in){
+      document.querySelector('#offcanvasLabel').innerHTML = "Following:";
+      load_offcanvas_content('following', user);
+    } else {
+      alert("If you want to see following, You must be logged in")
+    }
   })
   
 
@@ -77,16 +91,15 @@ function load_offcanvas_content(type, username){
         col2Div.classList.add('highCenterCol');
         col2Div.classList.add("col-6");
 
-        var user_is_logged_in = document.querySelector('#logout_button') !== null;
 
-        if(user_is_logged_in && user.username !== document.querySelector('#user_page').textContent){
+        if(user.username !== document.querySelector('#user_page').textContent){
           const followButton = document.createElement('button');
           if(user.is_followed){
             followButton.className = "btn btn-primary";
-            followButton.textContent = "Unfollow :(";
+            followButton.textContent = "Unfollow";
           } else {
             followButton.className = "btn btn-outline-primary";
-            followButton.textContent = "Follow :)";
+            followButton.textContent = "Follow";
           }
           followButton.style.width = '120px';
 
@@ -96,7 +109,7 @@ function load_offcanvas_content(type, username){
                 
           col2Div.appendChild(followButton);
 
-        } else if(user_is_logged_in) {
+        } else {
           const userDescription = document.createElement('p');
           userDescription.innerHTML = "<em>It's you</em>";
           userDescription.style.fontSize = '20px';

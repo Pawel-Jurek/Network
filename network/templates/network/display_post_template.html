@@ -1,5 +1,5 @@
 <div class="post">
-    {% if user.username == post.author %}
+    {% if user.is_authenticated and user.username == post.author %}
         <a class="editButton" role="button" data-postid="{{ post.id }}">Edit</a><br>
     {% endif %}
     <a href="{% url 'user_page' post.author 1 %}" class="author-clickable">{{ post.author }}</a><br>
@@ -45,7 +45,7 @@
                         <a href="{% url 'user_page' post.author 1 %}" class="author-clickable">{{ comment.author }}</a><br>
                         <em>{{ comment.created_date }}</em><br>
                         <a>{{comment.content}}</a>
-                        {% if user.username == comment.author %}
+                        {% if user.is_authenticated and user.username == comment.author %}
                             <div>
                                 <button class="btn btn-danger delete_comment" data-id="{{comment.id}}" style="margin-top: 10px;">Delete comment</button>
                             </div>
@@ -54,6 +54,7 @@
                     </div>
                     
                 {% endfor %}
+                {% if user.is_authenticated %}
                 <form id="comment_form{{post.id}}" class="input-group mb-3" method="post">
                     {% csrf_token %}
                     <div class="input-group mb-3">
@@ -61,6 +62,7 @@
                         <button class="btn btn-success submitCommentButton" data-new-author="{{user.username}}" data-postid="{{post.id}}" type="submit" id="button-addon2">Comment</button>
                     </div>
                 </form>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -22,7 +22,7 @@
                         </div>
                         {% if user.is_authenticated %}
                             {% if user.username != username %}
-                                {% if is_follower %}
+                                {% if is_follower %}                                  
                                     <button class="btn btn-primary" id="main-follow-button">Unfollow</button>
                                 {% else %}
                                     <button class="btn btn-outline-primary" id="main-follow-button">Follow</button>
@@ -33,7 +33,7 @@
                         {% endif %}
                     </div>
 
-                    <div class="col-2" id="followers-col" role='button' data-followers="{{allFollowers}}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                    <div class="col-2" id="followers-col" role='button' data-followers="{{allFollowers}}" {%if user.is_authenticated %} data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas" {% endif %}>
                         <div class="centerBox">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#b82d14" class="bi bi-people-fill" viewBox="0 0 16 16">
                                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
@@ -47,7 +47,8 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-2" id="following-col" role='button' data-following="{{allFollowing}}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+
+                    <div class="col-2" id="following-col" role='button' data-following="{{allFollowing}}" {%if user.is_authenticated %} data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas" {% endif %}>
                         <div class="centerBox">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#033387" class="bi bi-people-fill" viewBox="0 0 16 16">
                                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
@@ -61,6 +62,7 @@
                             </span>
                         </div>
                     </div>
+
                     <div class="col-2" id="posts-col">
                         <div class="centerBox">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#1b8729" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -80,15 +82,16 @@
             </div>
         </div>
         
+        {% if user.is_authenticated %}
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body">
-                            
+            <div class="offcanvas-body">                        
             </div>
         </div>
+        {% endif %}
 
         <div id="userPosts">
             {% for post in userPosts %}
