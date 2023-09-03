@@ -20,7 +20,7 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
     
     def __str__(self):
-        return f'{self.author.username}: {self.content[:10]}'
+        return f'post {self.id}'
     
     def serialize(self):
         return {
@@ -43,7 +43,7 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_owner")
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_comment")
     def __str__(self):
-        return f'{self.author}: {self.post}'
+        return f'{self.author.username}: {self.post.id}'
     
     def serialize(self):
         return {
