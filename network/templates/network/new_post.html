@@ -7,7 +7,7 @@
             <form id="post_form" method="post">
                 {% csrf_token %}
                 <h2>New Post</h2>
-                <textarea id="post_content" name="content" rows="4" cols="50"></textarea>
+                <textarea id="post_content" name="content" rows="4" cols="50" required></textarea>
                 <div style="text-align: center;">
                     <input id="submit_button" value="Post" type="submit" class="btn btn-primary"/>
                 </div>              

@@ -9,7 +9,7 @@
         <p id="post_text{{post.id}}">{{ post.content }}</p>
         <form id="edit_post_form{{post.id}}" method="post" style="display: none;">
             {% csrf_token %}
-            <textarea class="editTextarea" style="height: 150px;" id="editTextarea{{post.id}}" name="content" rows="4" cols="50"></textarea>
+            <textarea class="editTextarea" style="height: 150px;" id="editTextarea{{post.id}}" name="content" rows="4" cols="50" required></textarea>
             <div style="text-align: center;">
                 <input value="Save" type="submit" class="btn btn-primary submitEditButton"/>
             </div>
@@ -58,7 +58,7 @@
                 <form id="comment_form{{post.id}}" class="input-group mb-3" method="post">
                     {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input id="commentTextarea{{post.id}}" type="text" class="form-control commentTextarea" placeholder="Comment here" aria-describedby="button-addon2">
+                        <input id="commentTextarea{{post.id}}" type="text" class="form-control commentTextarea" placeholder="Comment here" aria-describedby="button-addon2" required>
                         <button class="btn btn-success submitCommentButton" data-new-author="{{user.username}}" data-postid="{{post.id}}" type="submit" id="button-addon2">Comment</button>
                     </div>
                 </form>
